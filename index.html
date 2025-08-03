@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ArDev | خانه</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body, html { height: 100%; background-color: #0d0d0d; color: white; overflow-x: hidden; }
+
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0d0d0d; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeOut 1s ease 2.8s forwards;
+        }
+        .loader-circle {
+            border: 8px solid #333; border-top: 8px solid #f00;
+            border-radius: 50%; width: 60px; height: 60px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        header {
+            position: absolute; top: 20px; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 50px; z-index: 1000;
+        }
+        .left-header, .center-header, .right-header {
+            display: flex; align-items: center; gap: 30px;
+        }
+        .btn {
+            text-decoration: none; color: #111; background: #ff4d4d;
+            padding: 10px 20px; border-radius: 10px; font-weight: bold;
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        .btn:hover { background: #ff0000; }
+        .link-header {
+            text-decoration: none; color: white; font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .link-header:hover { color: #ff0000; transform: scale(1.1); }
+        .discord-link {
+            color: #111; font-weight: bold; background-color: #00aaff;
+            padding: 10px 20px; border-radius: 10px;
+            cursor: pointer; transition: all 0.3s ease; user-select: none;
+        }
+        .discord-link:hover {
+            background-color: #0077cc; color: #000; transform: scale(1.05);
+        }
+
+        .hero { margin-top: 200px; text-align: center; }
+        .hero h1 { font-size: 2.8rem; color: white; }
+        .hero h1 span { color: #ff3030; }
+        .hero p { margin-top: 10px; color: #ccc; }
+
+        #particles-js {
+            position: fixed; width: 100%; height: 100%;
+            z-index: -1; top: 0; left: 0;
+        }
+
+        #discord-panel-backdrop {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; align-items: center; justify-content: center;
+            z-index: 10000;
+        }
+
+        #discord-panel {
+            width: 320px; background-color: #BADAFF; border-radius: 15px;
+            box-shadow: 0 0 20px #00aaffaa;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 25px 20px; transform-style: preserve-3d;
+            animation: rotateInPanel 0.8s ease forwards;
+        }
+        @keyframes rotateInPanel {
+            0% { opacity: 0; transform: rotateY(-90deg) scale(0.5); }
+            100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+        }
+        #discord-panel .middle-text {
+            color: white; font-weight: bold; font-size: 1.3rem;
+            text-align: center; margin-bottom: 25px; line-height: 1.5;
+        }
+        #discord-panel .bottom-button {
+            background-color: #111; color: #00aaff; border: none;
+            padding: 12px 20px; font-weight: bold; font-size: 1rem;
+            border-radius: 10px; cursor: pointer;
+        }
+        #discord-panel .bottom-button:hover {
+            background-color: #222; transform: scale(1.05);
+        }
+
+        #login-backdrop {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 10000; align-items: center; justify-content: center;
+            animation-duration: 0.7s; animation-fill-mode: forwards;
+        }
+
+        #login-panel {
+            background: #ffffff; color: #000;
+            padding: 40px 35px; border-radius: 20px;
+            width: 400px; max-width: 90vw;
+            display: flex; flex-direction: column; gap: 20px;
+            box-shadow: 0 0 30px #aaa;
+            font-weight: 600; font-size: 1.1rem;
+            transform-style: preserve-3d;
+            animation: scaleIn 0.7s ease forwards;
+        }
+        @keyframes scaleIn {
+            0% { opacity: 0; transform: scale(0.6); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        #login-panel input {
+            padding: 15px 12px; border-radius: 8px;
+            border: 2px solid #aaa; font-size: 1rem; font-weight: 600;
+        }
+        #login-panel button {
+            padding: 15px; background: #4caf50; color: white;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 700; font-size: 1.1rem;
+        }
+
+        #login-toggle.logged-in {
+            background-color: #43b581; color: black !important;
+            font-weight: bold; border-radius: 12px;
+            padding: 10px 20px;
+        }
+
+        #user-settings img {
+            transition: transform 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading -->
+    <div id="loading-screen"><div class="loader-circle"></div></div>
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="left-header">
+            <a class="btn" id="login-toggle">ورود / ثبت نام</a>
+            <div id="user-settings" style="display:none; position: relative;">
+                <img src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png" alt="تنظیمات" id="gear-icon" style="width: 28px; height: 28px; margin-right: 10px; cursor: pointer;" />
+                <div id="settings-panel" style="display: none; position: absolute; top: 40px; right: 0; background: #111; color: white; border-radius: 12px; padding: 15px 20px; box-shadow: 0 0 15px #000; z-index: 10000; width: 200px; text-align: center;">
+                    <div id="username-display" style="color: white; margin-bottom: 15px; font-weight: bold;"></div>
+                    <button id="logout-btn" style="background: #ff0000; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;">خروج از حساب کاربری</button>
+                </div>
+            </div>
+        </div>
+        <div class="center-header">
+            <a href="#" class="link-header">نمونه کار</a>
+            <a href="#" class="link-header">فروشگاه</a>
+            <a href="#" class="link-header">سفارش</a>
+        </div>
+        <div class="right-header">
+            <div id="discord-link" class="discord-link">دیسکورد</div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>سلام، من <span>ArDev</span> هستم</h1>
+        <p>خوش آمدید به سایت من</p>
+    </section>
+
+    <!-- Discord -->
+    <div id="discord-panel-backdrop">
+        <div id="discord-panel" class="animate__animated animate__fadeInDown">
+            <div class="middle-text">برای پیوستن به دیسکورد ما کلیک کنید.</div>
+            <button class="bottom-button" id="discord-join-btn">پیوستن</button>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div id="login-backdrop" class="animate__animated">
+        <div id="login-panel">
+            <input type="text" id="username" placeholder="نام کاربری" />
+            <input type="password" id="password" placeholder="رمز عبور" />
+            <button id="login-btn">ورود</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 200, "density": { "enable": true, "value_area": 1500 }},
+                "color": { "value": "#ff0000" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5 },
+                "size": { "value": 3 },
+                "line_linked": { "enable": true, "distance": 120, "color": "#ff0000", "opacity": 0.3, "width": 1 },
+                "move": { "enable": true, "speed": 3 }
+            },
+            "interactivity": {
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "repulse": { "distance": 120, "duration": 0.4 },
+                    "push": { "particles_nb": 3 }
+                }
+            },
+            "retina_detect": true
+        });
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loading-screen');
+            setTimeout(() => loader.style.display = 'none', 3800);
+        });
+
+        const discordLink = document.getElementById('discord-link');
+        const discordBackdrop = document.getElementById('discord-panel-backdrop');
+        const discordJoinBtn = document.getElementById('discord-join-btn');
+
+        discordLink.addEventListener('click', () => {
+            discordBackdrop.style.display = 'flex';
+        });
+        discordBackdrop.addEventListener('click', (e) => {
+            if (e.target === discordBackdrop) discordBackdrop.style.display = 'none';
+        });
+        discordJoinBtn.addEventListener('click', () => {
+            window.open('https://discord.gg/PCNzXBs8FW', '_blank');
+        });
+
+        const loginToggle = document.getElementById('login-toggle');
+        const loginBackdrop = document.getElementById('login-backdrop');
+        const loginBtn = document.getElementById('login-btn');
+        const usernameInput = document.getElementById('username');
+        const gearIcon = document.getElementById('gear-icon');
+        const userSettings = document.getElementById('user-settings');
+        const settingsPanel = document.getElementById('settings-panel');
+        const usernameDisplay = document.getElementById('username-display');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        let loggedInUser = null;
+
+        function openLoginPanel() {
+            loginBackdrop.style.display = 'flex';
+            loginBackdrop.classList.remove('animate__fadeOut');
+            loginBackdrop.classList.add('animate__fadeInDown');
+        }
+
+        function closeLoginPanel() {
+            loginBackdrop.classList.remove('animate__fadeInDown');
+            loginBackdrop.classList.add('animate__fadeOut');
+            setTimeout(() => {
+                loginBackdrop.style.display = 'none';
+            }, 700);
+        }
+
+        loginToggle.addEventListener('click', () => {
+            if (loggedInUser) return;
+            openLoginPanel();
+        });
+
+        loginBackdrop.addEventListener('click', (e) => {
+            if (e.target === loginBackdrop) closeLoginPanel();
+        });
+
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            const password = document.getElementById('password').value.trim();
+            if (!username || !password) return alert('لطفاً نام کاربری و رمز عبور را وارد کنید.');
+            loggedInUser = username;
+            closeLoginPanel();
+            loginToggle.textContent = username;
+            loginToggle.classList.add('logged-in');
+            usernameDisplay.textContent = username;
+            userSettings.style.display = 'block';
+        });
+
+        gearIcon.addEventListener('mouseenter', () => {
+            gearIcon.style.transform = 'rotate(180deg)';
+        });
+        gearIcon.addEventListener('mouseleave', () => {
+            gearIcon.style.transform = 'rotate(0deg)';
+        });
+
+        gearIcon.addEventListener('click', () => {
+            settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            loggedInUser = null;
+            loginToggle.textContent = 'ورود / ثبت نام';
+            loginToggle.classList.remove('logged-in');
+            userSettings.style.display = 'none';
+            settingsPanel.style.display = 'none';
+            alert('از حساب خارج شدید.');
+        });
+    </script>
+</body>
+</html>
